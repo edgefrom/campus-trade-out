@@ -1,5 +1,0 @@
-<view class="container">
-  <view class="page-head"><text class="eyebrow">KEEP IN TOUCH</text><text class="title">聊聊好物</text><text class="subtitle">在这里和同学约个时间、聊聊细节。</text></view>
-  <block wx:if="{{conversations.length > 0}}"><view class="conversation-list"><view class="conv-item pressable" wx:for="{{conversations}}" wx:key="_id" bindtap="enterChat" data-id="{{item._id}}"><image class="conv-avatar" src="{{item.partner.avatarUrl || ''}}" mode="aspectFill"/><view class="conv-info"><text class="conv-name">{{item.partner.nickName}}</text><text class="conv-item-title">关于 · {{item.itemTitle}}</text><text class="conv-lastmsg">{{item.lastMessage.content || '发一条消息开始沟通吧'}}</text></view><view wx:if="{{item.unreadCount > 0}}" class="unread-badge">{{item.unreadCount}}</view><text wx:else class="arrow">›</text></view></view></block>
-  <view wx:else class="empty"><view class="empty-mark">✉</view><text class="empty-title">还没有对话</text><text>遇到喜欢的好物，就和 TA 打个招呼吧。</text></view>
-</view>
