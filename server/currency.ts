@@ -1,6 +1,6 @@
 export const CURRENCIES = {
-  originium: { code: 'originium' as const, name: '至纯源石', description: '稀缺货币，奖励开发贡献' },
-  lungmen: { code: 'lungmen' as const, name: '龙门币', description: '通用货币，用于各类奖励' },
+  originium: { code: 'originium' as const, name: '至纯源石', description: '开发贡献凭证 · 或参与治理与分红' },
+  lungmen: { code: 'lungmen' as const, name: '龙门币', description: '通用货币 · 可兑换商品与抽奖' },
 } as const;
 
 export type CurrencyCode = keyof typeof CURRENCIES;

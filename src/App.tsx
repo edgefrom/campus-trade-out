@@ -164,6 +164,11 @@ function WalletPage(){
   return <div className="profile-page wallet-page"><div className="page-title"><span className="eyebrow">REWARDS</span><h1>奖励与资产</h1><p>奖励由管理员根据贡献手动发放，明细随时可查。</p></div>
     {loading?<PageLoading/>:error?<ErrorState message={error} retry={load}/>:<>
       <section className="wallet-cards">{wallet.map(c=><div className="wallet-card" key={c.code}><span className={`wallet-icon ${c.code}`}>{c.code==='originium'?<Gem/>:<Coins/>}</span><div><b>{c.name}</b><small>{c.description}</small></div><strong className="wallet-balance">{c.balance}</strong></div>)}</section>
+      <section className="wallet-intro">
+        <div className="wallet-intro-item"><span className="wallet-icon originium"><Gem/></span><div><b>至纯源石 · 开发贡献凭证</b><p>奖励开发贡献的稀缺货币，是你参与开发、做出贡献的证明。后续可能影响项目的决策，并在项目产生盈利时参与分红（若实现）。</p></div></div>
+        <div className="wallet-intro-item"><span className="wallet-icon lungmen"><Coins/></span><div><b>龙门币 · 通用货币</b><p>通用货币，用途更广。后续可用于兑换商品，或参与普通奖池、限定奖池抽奖等活动。</p></div></div>
+        <p className="wallet-intro-note">本项目处于测试阶段，以上均为初步设想，具体规则以正式公告为准。</p>
+      </section>
       <section className="wallet-ledger"><div className="section-head wallet-ledger-head"><div><span className="eyebrow">HISTORY</span><h2>入账明细</h2><p>最近 50 条发放记录</p></div></div>
       {entries.length?<div className="wallet-entries">{entries.map(e=><div className="wallet-entry" key={e.id}><span className="wallet-entry-icon"><Gift/></span><div><b>+{e.amount} {nameOf(e.currency)}</b><p>{e.reason}</p><time dateTime={e.createdAt}>{formatTimestamp(e.createdAt)}</time></div></div>)}</div>:<div className="empty-state wallet-empty"><span className="empty-icon"><Gem/></span><h2>还没有奖励记录</h2><p>参与开发或社区贡献，管理员会不定期发放奖励。</p></div>}
       </section>
