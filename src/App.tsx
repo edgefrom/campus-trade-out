@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
-  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, CircleUserRound, Edit3, Heart, Home,
+  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, CircleUserRound, Coins, Edit3, Gem, Gift, Heart, Home,
   ImagePlus, Laptop, LifeBuoy, LogOut, Menu, MessageCircle, Package, Plus, Search,
   Send, ShieldCheck, ShoppingBag, SlidersHorizontal, Sparkles, Upload, UserRound, X,
 } from 'lucide-react';
 import { api, ApiError, post } from './api';
 import { useAuth } from './auth';
-import type { ChatMessage, Comment, Conversation, Item, PublicProfile, User } from './types';
+import type { ChatMessage, Comment, Conversation, Item, PublicProfile, User, WalletCurrency, WalletEntry } from './types';
 import {formatTimestamp} from './time';
 import {AvatarCropper} from './AvatarCropper';
 
@@ -150,7 +150,25 @@ function UserProfilePage(){
 
 function MinePage(){
   const {user,logout}=useAuth(),navigate=useNavigate();const [stats,setStats]=useState({total:0,selling:0,sold:0});useEffect(()=>{api<{stats:typeof stats}>('/api/me/stats').then(d=>setStats(d.stats))},[]);if(!user)return null;
-  return <div className="profile-page"><section className="profile-hero"><img src={avatar(user.avatarUrl)} alt="个人头像"/><div><span className={`verified-line ${user.campusVerified?'':'not-campus'}`}><ShieldCheck/>{user.campusVerified?'已认证校园账号':'非校园邮箱 · 仅可浏览'}</span><h1>{user.nickname}</h1><p>{user.email}</p></div><Link className="button secondary" to="/profile"><Edit3/>编辑资料</Link></section><section className="stats-row"><div><b>{stats.total}</b><span>累计发布</span></div><div><b>{stats.selling}</b><span>正在出售</span></div><div><b>{stats.sold}</b><span>已经售出</span></div></section><section className="mine-grid"><Link to="/my-items"><span className="feature-icon blue"><Package/></span><div><b>我的发布</b><small>管理闲置与状态</small></div><ChevronRight/></Link><Link to="/favorites"><span className="feature-icon rose"><Heart/></span><div><b>我的收藏</b><small>查看感兴趣的好物</small></div><ChevronRight/></Link><Link to="/messages"><span className="feature-icon green"><MessageCircle/></span><div><b>商品消息</b><small>继续和同学沟通</small></div><ChevronRight/></Link><Link to="/feedback"><span className="feature-icon blue"><LifeBuoy/></span><div><b>问题反馈与建议</b><small>报告异常或告诉我们你的想法</small></div><ChevronRight/></Link><Link to="/safety"><span className="feature-icon amber"><ShieldCheck/></span><div><b>安全交易指南</b><small>校内面交与防骗提醒</small></div><ChevronRight/></Link></section><button className="logout-button" onClick={async()=>{await logout();navigate('/')}}><LogOut/>退出登录</button></div>;
+  return <div className="profile-page"><section className="profile-hero"><img src={avatar(user.avatarUrl)} alt="个人头像"/><div><span className={`verified-line ${user.campusVerified?'':'not-campus'}`}><ShieldCheck/>{user.campusVerified?'已认证校园账号':'非校园邮箱 · 仅可浏览'}</span><h1>{user.nickname}</h1><p>{user.email}</p></div><Link className="button secondary" to="/profile"><Edit3/>编辑资料</Link></section><section className="stats-row"><div><b>{stats.total}</b><span>累计发布</span></div><div><b>{stats.selling}</b><span>正在出售</span></div><div><b>{stats.sold}</b><span>已经售出</span></div></section><section className="mine-grid"><Link to="/my-items"><span className="feature-icon blue"><Package/></span><div><b>我的发布</b><small>管理闲置与状态</small></div><ChevronRight/></Link><Link to="/favorites"><span className="feature-icon rose"><Heart/></span><div><b>我的收藏</b><small>查看感兴趣的好物</small></div><ChevronRight/></Link><Link to="/messages"><span className="feature-icon green"><MessageCircle/></span><div><b>商品消息</b><small>继续和同学沟通</small></div><ChevronRight/></Link><Link to="/wallet"><span className="feature-icon violet"><Gem/></span><div><b>奖励与资产</b><small>查看奖励余额与明细</small></div><ChevronRight/></Link><Link to="/feedback"><span className="feature-icon blue"><LifeBuoy/></span><div><b>问题反馈与建议</b><small>报告异常或告诉我们你的想法</small></div><ChevronRight/></Link><Link to="/safety"><span className="feature-icon amber"><ShieldCheck/></span><div><b>安全交易指南</b><small>校内面交与防骗提醒</small></div><ChevronRight/></Link></section><button className="logout-button" onClick={async()=>{await logout();navigate('/')}}><LogOut/>退出登录</button></div>;
+}
+
+function WalletPage(){
+  const [wallet,setWallet]=useState<WalletCurrency[]>([]);
+  const [entries,setEntries]=useState<WalletEntry[]>([]);
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState('');
+  const load=()=>{setLoading(true);setError('');api<{wallet:Record<string,WalletCurrency>;entries:WalletEntry[]}>('/api/me/wallet').then(d=>{setWallet(Object.values(d.wallet));setEntries(d.entries)}).catch(e=>setError(e.message)).finally(()=>setLoading(false))};
+  useEffect(load,[]);
+  const nameOf=(code:string)=>wallet.find(c=>c.code===code)?.name||code;
+  return <div className="profile-page wallet-page"><div className="page-title"><span className="eyebrow">REWARDS</span><h1>奖励与资产</h1><p>奖励由管理员根据贡献手动发放，明细随时可查。</p></div>
+    {loading?<PageLoading/>:error?<ErrorState message={error} retry={load}/>:<>
+      <section className="wallet-cards">{wallet.map(c=><div className="wallet-card" key={c.code}><span className={`wallet-icon ${c.code}`}>{c.code==='originium'?<Gem/>:<Coins/>}</span><div><b>{c.name}</b><small>{c.description}</small></div><strong className="wallet-balance">{c.balance}</strong></div>)}</section>
+      <section className="wallet-ledger"><div className="section-head wallet-ledger-head"><div><span className="eyebrow">HISTORY</span><h2>入账明细</h2><p>最近 50 条发放记录</p></div></div>
+      {entries.length?<div className="wallet-entries">{entries.map(e=><div className="wallet-entry" key={e.id}><span className="wallet-entry-icon"><Gift/></span><div><b>+{e.amount} {nameOf(e.currency)}</b><p>{e.reason}</p><time dateTime={e.createdAt}>{formatTimestamp(e.createdAt)}</time></div></div>)}</div>:<div className="empty-state wallet-empty"><span className="empty-icon"><Gem/></span><h2>还没有奖励记录</h2><p>参与开发或社区贡献，管理员会不定期发放奖励。</p></div>}
+      </section>
+    </>}
+  </div>;
 }
 
 function ProfilePage(){
@@ -176,7 +194,7 @@ export default function App(){return <Routes>
     <Route path="/" element={<HomePage/>}/><Route path="/items/:id" element={<ItemDetailPage/>}/><Route path="/users/:id" element={<UserProfilePage/>}/><Route path="/safety" element={<SafetyPage/>}/>
     <Route path="/publish" element={<RequireAuth><RequireCampus><PublishPage/></RequireCampus></RequireAuth>}/><Route path="/items/:id/edit" element={<RequireAuth><RequireCampus><PublishPage/></RequireCampus></RequireAuth>}/>
     <Route path="/messages" element={<RequireAuth><MessagesPage/></RequireAuth>}/><Route path="/messages/:id" element={<RequireAuth><ChatPage/></RequireAuth>}/>
-    <Route path="/mine" element={<RequireAuth><MinePage/></RequireAuth>}/><Route path="/my-items" element={<RequireAuth><ItemCollection kind="mine"/></RequireAuth>}/><Route path="/favorites" element={<RequireAuth><ItemCollection kind="favorites"/></RequireAuth>}/><Route path="/profile" element={<RequireAuth><ProfilePage/></RequireAuth>}/><Route path="/feedback" element={<RequireAuth><FeedbackPage/></RequireAuth>}/>
+    <Route path="/mine" element={<RequireAuth><MinePage/></RequireAuth>}/><Route path="/my-items" element={<RequireAuth><ItemCollection kind="mine"/></RequireAuth>}/><Route path="/favorites" element={<RequireAuth><ItemCollection kind="favorites"/></RequireAuth>}/><Route path="/profile" element={<RequireAuth><ProfilePage/></RequireAuth>}/><Route path="/wallet" element={<RequireAuth><WalletPage/></RequireAuth>}/><Route path="/feedback" element={<RequireAuth><FeedbackPage/></RequireAuth>}/>
     <Route path="*" element={<Navigate to="/" replace/>}/>
   </Routes></Shell>}/>
  </Routes>}

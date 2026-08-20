@@ -6,3 +6,5 @@ export type Comment = { id:number; content:string; createdAt:string; author:Sell
 export type Conversation = { id:number; itemId:number; itemTitle:string; partner:{nickname:string;avatarUrl:string}; lastMessage:string; unreadCount:number; updatedAt:string };
 export type ItemCardSnapshot = { id:number; title:string; price:number; image:string; condition:string; status:string };
 export type ChatMessage = { id:number; content:string; type:'text'|'item_card'; item:ItemCardSnapshot|null; createdAt:string; mine:boolean; sender:{nickname:string;avatarUrl:string} };
+export type WalletCurrency = { code:string; name:string; description:string; balance:number };
+export type WalletEntry = { id:number; currency:string; amount:number; balanceAfter:number; reason:string; operator:string; createdAt:string };
