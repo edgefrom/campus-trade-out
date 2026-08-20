@@ -7,3 +7,8 @@ uploads/*
 .env.local
 deploy/backups/
 npm-debug.log*
+
+# 本地数据库备份与上传图片备份（仅代码入库，不提交数据）
+campus_market_*/
+campus-market/
+*.sql

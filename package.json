@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "concurrently -k -n api,web -c blue,green \"tsx watch server/bootstrap.ts\" \"vite\"",
     "start": "tsx server/bootstrap.ts",
+    "grant": "tsx server/grant.ts",
     "build": "tsc --noEmit && vite build",
     "test": "node --import tsx --test test/*.test.ts"
   },
